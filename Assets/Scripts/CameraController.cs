@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem; // Required for the new Input System
 
 public class CameraController : MonoBehaviour {
     private Camera cam;
@@ -14,9 +15,13 @@ public class CameraController : MonoBehaviour {
     }
 
     void Update() {
-        HandleInput();
+        // Guard check to ensure a mouse is connected
+        if (Mouse.current != null) {
+            HandleInput();
+        }
 
-        if (!isAuto && Time.time - lastActiveTime > 3f && !Input.GetMouseButton(0)) {
+        // Resume auto-cam after 3 seconds of inactivity
+        if (!isAuto && Time.time - lastActiveTime > 3f && (Mouse.current == null || !Mouse.current.leftButton.isPressed)) {
             isAuto = true;
         }
 
@@ -26,23 +31,29 @@ public class CameraController : MonoBehaviour {
     }
 
     void HandleInput() {
+        Mouse mouse = Mouse.current;
+
         // Drag to Pan
-        if (Input.GetMouseButtonDown(0)) {
-            dragStartPos = cam.ScreenToWorldPoint(Input.mousePosition);
+        if (mouse.leftButton.wasPressedThisFrame) {
+            dragStartPos = cam.ScreenToWorldPoint(mouse.position.ReadValue());
             camStartPos = transform.position;
             isAuto = false;
             lastActiveTime = Time.time;
         }
-        if (Input.GetMouseButton(0)) {
-            Vector3 diff = dragStartPos - cam.ScreenToWorldPoint(Input.mousePosition);
+        
+        if (mouse.leftButton.isPressed) {
+            Vector3 diff = dragStartPos - cam.ScreenToWorldPoint(mouse.position.ReadValue());
             transform.position = camStartPos + diff;
             lastActiveTime = Time.time;
         }
 
         // Scroll to Zoom
-        float scroll = Input.mouseScrollDelta.y;
+        float scroll = mouse.scroll.ReadValue().y;
         if (Mathf.Abs(scroll) > 0.01f) {
-            cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - scroll * 5f, 5f, 150f);
+            // The new input system often returns large scroll values (like 120 or -120), so we normalize it to 1 or -1
+            float scrollDir = Mathf.Sign(scroll); 
+            
+            cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - scrollDir * 5f, 5f, 150f);
             isAuto = false;
             lastActiveTime = Time.time;
         }
@@ -58,6 +69,9 @@ public class CameraController : MonoBehaviour {
             if (u.transform.position.y < minY) minY = u.transform.position.y;
             if (u.transform.position.y > maxY) maxY = u.transform.position.y;
         }
+
+        // Failsafe in case units haven't spawned yet
+        if (minX == float.MaxValue) return;
 
         Vector3 targetPos = new Vector3((minX + maxX) / 2f, (minY + maxY) / 2f, -10f);
         float targetW = Mathf.Max(maxX - minX + 20f, 40f);

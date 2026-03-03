@@ -369,11 +369,20 @@ MonoBehaviour:
       title: The Men of the Mountain
       coverUrl: 
       armySize: 15
-      format: Paperback
+      format: 0
       comp:
-        k: 0
-        a: 0
-        m: 0
+        k: 1
+        a: 1
+        m: 1
+    - id: 002
+      title: Rotten Gods
+      coverUrl: 
+      armySize: 13
+      format: 0
+      comp:
+        k: 2
+        a: 1
+        m: 2
 --- !u!1 &1737721545
 GameObject:
   m_ObjectHideFlags: 0
