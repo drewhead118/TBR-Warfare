@@ -8,10 +8,16 @@ using System.Threading;
 [Serializable]
 public class ArmyComp { public float k, a, m; }
 
+public enum BookFormat
+{
+    Paperback,
+    Digital
+}
+
 [Serializable]
 public class BookData {
     public string id; public string title; public string coverUrl;
-    public int armySize; public string format; // "digital" or "paperback"
+    public int armySize; public BookFormat format; // "digital" or "paperback"
     public ArmyComp comp;
 }
 

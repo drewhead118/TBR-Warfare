@@ -95,7 +95,7 @@ public class BattleManager : MonoBehaviour {
         // Update data exactly like your HTML logic
         foreach (var f in factions) {
             if (f != winner) {
-                int baseBonus = f.book.format == "digital" ? 2 : 4;
+                int baseBonus = f.book.format == BookFormat.Digital ? 2 : 4;
                 f.book.armySize += baseBonus + f.escapedCount;
             }
         }
