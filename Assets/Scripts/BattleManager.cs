@@ -13,6 +13,9 @@ public class BattleManager : MonoBehaviour {
     public GameObject knightPrefab;
     public GameObject archerPrefab;
     public GameObject magePrefab;
+    
+    [Header("UI Prefabs")]
+    public GameObject factionBannerPrefab;
 
     public List<FactionManager> factions = new List<FactionManager>();
     public List<Unit> allUnits = new List<Unit>();
@@ -40,6 +43,11 @@ public class BattleManager : MonoBehaviour {
             Vector2 spawnCenter = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
 
             SpawnUnits(fm, spawnCenter);
+            
+            if (factionBannerPrefab != null) {
+                GameObject bannerObj = Instantiate(factionBannerPrefab, spawnCenter, Quaternion.identity);
+                bannerObj.GetComponent<FactionBanner>().Setup(fm);
+            }
         }
     }
 

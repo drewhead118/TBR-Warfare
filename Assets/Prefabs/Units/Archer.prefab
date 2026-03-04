@@ -50,7 +50,7 @@ MonoBehaviour:
     title: 
     coverUrl: 
     armySize: 0
-    format: 
+    format: 0
     comp:
       k: 0
       a: 0
@@ -58,7 +58,7 @@ MonoBehaviour:
   maxHp: 100
   hp: 100
   speed: 2
-  attackRange: 1.5
+  attackRange: 15
   cooldownTime: 1
   isEscaped: 0
   fleeThreshold: 0
