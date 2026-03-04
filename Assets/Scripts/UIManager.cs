@@ -21,12 +21,21 @@ public class UIManager : MonoBehaviour {
 
     [Header("CSV Data")]
     public TMP_InputField csvInput;
-    
+
+    [Header("Book List Queue")]
+    public GameObject bookRowPrefab;     // Assign your BookRowUI prefab here
+    public Transform bookListContent;    // Assign the Content object of your Scroll View
+
     [Header("Winner Modal")]
     public TextMeshProUGUI winnerTitleText;
     public RawImage winnerCoverImage;
     public TextMeshProUGUI winnerStatsText;
     public TextMeshProUGUI loserStatsText;
+
+    void Start() {
+        // Initialize the table when the game starts
+        SwitchToAdmin();
+    }
 
     public void SwitchToBattle() {
         if (DataManager.Instance.db.books.Count < 2) {
@@ -42,16 +51,45 @@ public class UIManager : MonoBehaviour {
     public void SwitchToAdmin() {
         adminPanel.SetActive(true);
         battlePanel.SetActive(false);
-        // Refresh Table UI here (Instantiate prefabs for db.books)
+        winnerModal.SetActive(false);
+        RefreshTableUI();
     }
 
+    // --- TABLE GENERATION ---
+    public void RefreshTableUI() {
+        // Clear existing rows
+        foreach (Transform child in bookListContent) {
+            Destroy(child.gameObject);
+        }
+
+        // Spawn a row for every book in the database
+        foreach (BookData book in DataManager.Instance.db.books) {
+            GameObject rowObj = Instantiate(bookRowPrefab, bookListContent);
+            BookRowUI rowUI = rowObj.GetComponent<BookRowUI>();
+            rowUI.Initialize(book, this);
+        }
+    }
+
+    public void DeleteBook(BookData book) {
+        DataManager.Instance.db.books.Remove(book);
+        DataManager.Instance.SaveData();
+        RefreshTableUI();
+    }
+
+    public void ClearAllBooks() {
+        DataManager.Instance.db.books.Clear();
+        DataManager.Instance.SaveData();
+        RefreshTableUI();
+    }
+
+    // --- FORM & DATA IMPORTING ---
     public void AddBookFromForm() {
         BookData newBook = new BookData {
             id = System.Guid.NewGuid().ToString(),
             title = string.IsNullOrEmpty(titleInput.text) ? "Unknown Title" : titleInput.text,
             coverUrl = string.IsNullOrEmpty(coverInput.text) ? "https://via.placeholder.com/150" : coverInput.text,
             armySize = int.TryParse(armyInput.text, out int size) ? size : 15,
-            format = formatDropdown.value == 0 ? BookFormat.Digital : BookFormat.Paperback,
+            format = formatDropdown.value == 0 ? BookFormat.Paperback : BookFormat.Digital,
             comp = new ArmyComp {
                 k = float.TryParse(kInput.text, out float k) ? k : 1,
                 a = float.TryParse(aInput.text, out float a) ? a : 1,
@@ -60,8 +98,12 @@ public class UIManager : MonoBehaviour {
         };
         DataManager.Instance.db.books.Add(newBook);
         DataManager.Instance.SaveData();
-        Debug.Log("Book Added: " + newBook.title);
-        // Clear inputs and refresh table UI
+        
+        // Reset inputs to default
+        titleInput.text = ""; coverInput.text = ""; armyInput.text = "15";
+        kInput.text = "1"; aInput.text = "1"; mInput.text = "1";
+        
+        RefreshTableUI(); // Instantly update the list
     }
 
     public void ParseCSV() {
@@ -89,7 +131,7 @@ public class UIManager : MonoBehaviour {
         }
         DataManager.Instance.SaveData();
         csvInput.text = "";
-        Debug.Log($"Imported {added} books from CSV.");
+        RefreshTableUI(); // Instantly update the list
     }
 
     public void ExportCSV() {
@@ -99,10 +141,10 @@ public class UIManager : MonoBehaviour {
         }
         string path = Application.persistentDataPath + "/tbr_export.csv";
         File.WriteAllText(path, csv);
-        Application.OpenURL("file://" + Application.persistentDataPath); // Opens folder to show file
+        Application.OpenURL("file://" + Application.persistentDataPath); 
     }
 
-    // Called by BattleManager on Win
+    // --- BATTLE MODAL ---
     public void ShowWinnerModal(FactionManager winner) {
         winnerModal.SetActive(true);
         winnerTitleText.text = winner.book.title;
