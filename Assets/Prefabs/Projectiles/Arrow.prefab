@@ -47,6 +47,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArrowProjectile
   explosionPrefab: {fileID: 0}
   visualSprite: {fileID: 5653291261065906159}
+  spriteRenderers: []
+  planarSpeed: 10
+  scatterRadius: 2
+  heightPerUnit: 0.2
+  minApexHeight: 0.75
+  maxApexHeight: 4
+  stickWobbleDuration: 1
+  wobbleDegrees: 30
+  wobbleFrequency: 4
+  wobbleDamping: 18
+  fadeDelay: 0.5
+  fadeDuration: 0.5
 --- !u!1 &7624124238521354660
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,7 +86,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.03, z: 1}
+  m_LocalScale: {x: 0.62, y: 0.03, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5481413247259831777}

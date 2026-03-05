@@ -17,6 +17,8 @@ public class BattleManager : MonoBehaviour {
     [Header("UI Prefabs")]
     public GameObject factionBannerPrefab;
 
+    public Canvas battleCanvas;
+
     public List<FactionManager> factions = new List<FactionManager>();
     public List<Unit> allUnits = new List<Unit>();
 
@@ -67,7 +69,7 @@ public class BattleManager : MonoBehaviour {
     void SpawnSpecificType(GameObject prefab, int count, FactionManager fm, Vector2 center) {
         for (int i = 0; i < count; i++) {
             Vector2 pos = center + Random.insideUnitCircle * 5f;
-            GameObject go = Instantiate(prefab, pos, Quaternion.identity);
+            GameObject go = Instantiate(prefab, pos, Quaternion.identity, battleCanvas.transform);
             Unit unitScript = go.GetComponent<Unit>();
             unitScript.Setup(fm.book, fm);
             allUnits.Add(unitScript);

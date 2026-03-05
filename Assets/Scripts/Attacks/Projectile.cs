@@ -21,7 +21,7 @@ public abstract class Projectile : MonoBehaviour {
         if (sr != null) sr.color = shooterUnit.factionManager.factionColor;
     }
 
-    protected void Explode() {
+    protected void Explode(bool destroy = false) {
         isActive = false;
         
         // AOE Damage Calculation (Matches HTML distance check)
@@ -43,6 +43,9 @@ public abstract class Projectile : MonoBehaviour {
         }
 
         // TODO: Play Sound here (e.g., AudioManager.Instance.Play("magicHit"))
-        Destroy(gameObject);
+        if (destroy)
+        {
+            Destroy(gameObject);    
+        }
     }
 }

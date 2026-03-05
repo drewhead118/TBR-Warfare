@@ -20,13 +20,21 @@ public abstract class Unit : MonoBehaviour {
     [Header("Visuals")]
     public Transform visualSprite; // Drag the sprite child here (used for levitation Y offset)
     public Unit levitatedBy;
+    public HealthBar healthBar;
 
+
+    void Awake()
+    {
+        healthBar = GetComponentInChildren<HealthBar>();
+        healthBar.UpdateHealthBar(1);
+    }
     public virtual void Setup(BookData bookFaction, FactionManager manager) {
         faction = bookFaction;
         factionManager = manager;
         hp = maxHp;
         fleeThreshold = Random.Range(0f, 0.35f);
         GetComponentInChildren<SpriteRenderer>().color = manager.factionColor;
+        
     }
 
     protected virtual void Update() {
@@ -85,6 +93,7 @@ public abstract class Unit : MonoBehaviour {
 
     public virtual void TakeDamage(float amount) {
         hp -= amount;
+        healthBar.UpdateHealthBar(hp/maxHp);
         if (hp <= 0) Die();
     }
 
